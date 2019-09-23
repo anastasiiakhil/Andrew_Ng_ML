@@ -9,8 +9,8 @@ def visualization(data, y):
     not_admitted = data[y == 0]
     plt.scatter(admitted.iloc[:, 0], admitted.iloc[:, 1], label='Accepted', c='navy', marker='+')
     plt.scatter(not_admitted.iloc[:, 0], not_admitted.iloc[:, 1], label='Rejected', c='gold', marker='o')
-    plt.xlabel('Test 1')
-    plt.ylabel('Test 2')
+    plt.xlabel('Test score 1')
+    plt.ylabel('Test score 2')
     plt.legend()
 
 
