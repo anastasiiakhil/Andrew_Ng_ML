@@ -45,9 +45,26 @@ def nn_cost_function(nn_params, input_layer_size, hidden_layer_size, num_labels,
     cost = 1/m * J
     reg_cost = cost + reg_param/(2*m) * (np.sum(theta_1[:, 1:]**2) + np.sum(theta_2[:, 1:]**2))
 
-    # backpropagation algorithm (to be continued)
-    theta_grad_1 = np.zeros(theta_1.shape)
-    theta_grad_2 = np.zeros(theta_2.shape)
+    # backpropagation algorithm
+    grad_1 = np.zeros(theta_1.shape)
+    grad_2 = np.zeros(theta_2.shape)
+
+    for i in range(m):
+        a1_i = a1[i, :]
+        a2_i = a2[i, :]
+        a3_i = a3[i, :]
+        d3 = a3_i - y_sort[i, :]
+        d2 = theta_2.T @ d3 * sigmoid_gradient(np.hstack((1, a1_i @ theta_1.T)))
+        grad1 = grad_1 + d2[1:][:, np.newaxis] @ a1_i[:, np.newaxis].T
+        grad2 = grad_2 + d3.T[:, np.newaxis] @ a2_i[:, np.newaxis].T
+
+    grad_1 = 1 / m * grad_1
+    grad_2 = 1 / m * grad_2
+
+    reg_grad1 = grad_1 + (reg_param / m) * np.hstack((np.zeros((theta_1.shape[0], 1)), theta_1[:, 1:]))
+    reg_grad2 = grad_2 + (reg_param / m) * np.hstack((np.zeros((theta_2.shape[0], 1)), theta_2[:, 1:]))
+
+    return cost, grad_1, grad_2, reg_cost, reg_grad1, reg_grad2
 
 
 def main():
@@ -67,7 +84,7 @@ def main():
     num_labels = 10
     nn_params = np.append(theta_1.flatten(),theta_2.flatten())
 
-    nn_cost_function(nn_params, input_layer_size, hidden_layer_size, num_labels, X, y, reg_param)
-
+    cost, reg_cost = nn_cost_function(nn_params, input_layer_size, hidden_layer_size, num_labels, X, y, reg_param)[0:4:3]
+    print("Cost at parameters (non-regularized):", cost, "\nCost at parameters (regularized):", reg_cost)
 
 main()
