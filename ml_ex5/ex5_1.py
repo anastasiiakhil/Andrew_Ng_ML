@@ -5,7 +5,7 @@ from scipy.optimize import minimize
 
 
 def data_visualization(X, y):
-    plt.scatter(X[:, 1], y, c='red', marker='x')
+    plt.scatter(X, y, c='red', marker='x')
     plt.title('Data')
     plt.xlabel('Change in water level')
     plt.ylabel('Water flowing out of the dam')
@@ -13,8 +13,8 @@ def data_visualization(X, y):
 
 
 def data_with_line(X, y, line):
-    plt.scatter(X[:, 1], y, c='red', marker='x')
-    plt.plot(X[:, 1], line)
+    plt.scatter(X, y, c='red', marker='x')
+    plt.plot(X, line)
     plt.title('Linear Fit')
     plt.xlabel('Change in water level')
     plt.ylabel('Water flowing out of the dam')
@@ -66,10 +66,10 @@ def curve_visualization(X, error_train, error_val):
 
 
 def poly_features(X, p):
-    X_poly = X
-    for i in range(1, p):
-        X_poly = np.vstack((X_poly, np.power(X, i+1)))
-    return X_poly
+    poly_X = np.zeros((X.shape[0], p))
+    for i in range(p):
+        poly_X[:, i] = X[:, 0]**(i+1)
+    return poly_X
 
 
 def data_normalization(x):
@@ -84,24 +84,24 @@ def main():
     X, y = data['X'], data['y']
     Xval, yval  = data['Xval'], data['yval']
     Xtest, ytest = data['Xtest'], data['ytest']
-    X = np.hstack((np.ones((X.shape[0], 1)), X))
-    Xval = np.hstack((np.ones((Xval.shape[0], 1)), Xval))
+    X_with_1s = np.insert(X, 0, 1, axis=1)
+    Xval_with_1s = np.insert(Xval, 0, 1, axis=1)
     # data_visualization(X, y)
 
-    theta = np.ones((X.shape[1], 1))
-    cost, grad = linear_reg_cost(X, y, theta, 1)
+    theta = np.array([[1], [1]])
+    cost, grad = linear_reg_cost(X_with_1s, y, theta, 1)
     print('Cost and Gradient at theta = [1, 1]:',  cost, grad[0], grad[1], '(this value should be about 303.99319222026429, -15.303016, 598.250744)')
 
-    theta_min = train_linear_reg(X, y, 0)
+    theta_min = train_linear_reg(X_with_1s, y, 0)
     print('Theta using scipy.optimize.minimize:', theta_min)
-    # data_with_line(X, y, np.dot(X, theta_min))
+    # data_with_line(X, y, np.dot(X_with_1s, theta_min))
 
-    error_train, error_val = learning_curve(X, y, Xval, yval, 0)
+    error_train, error_val = learning_curve(X_with_1s, y, Xval_with_1s, yval, 0)
     # curve_visualization(X, error_train, error_val)
 
-   # Feature Mapping for Polynomial Regression
+    # Feature Mapping for Polynomial Regression
     p = 8
-    poly_X = poly_features(X[:, 1], p)
+    poly_X = poly_features(X, p)
     poly_X, mu, sigma = data_normalization(poly_X)
     poly_X = np.hstack((np.ones((poly_X.shape[0], 1)), poly_X))
 
