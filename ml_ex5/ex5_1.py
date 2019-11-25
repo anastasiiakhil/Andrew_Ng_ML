@@ -121,11 +121,23 @@ def main():
     poly_val_X = (poly_val_X - mu) / sigma
     poly_val_X = np.hstack((np.ones((poly_val_X.shape[0], 1)), poly_val_X))
 
-    poly_theta = train_linear_reg(poly_X, y, 0)
-    # plot_fit(X, y, 'Polynomial fit, $\lambda$ = 0', xlabel, ylabel, mu, sigma, poly_theta, p)
+    theta_0 = train_linear_reg(poly_X, y, 0)
+    # plot_fit(X, y, 'Polynomial fit, $\lambda$ = 0', xlabel, ylabel, mu, sigma, theta_0, p)
 
-    error_train_poly, error_val_poly = learning_curve(poly_X, y, poly_val_X, yval, 0)
-    # curve_visualization(X, error_train_poly, error_val_poly, 'Polynomial learning curve, $\lambda$ = 0')
+    error_train_0, error_val_0 = learning_curve(poly_X, y, poly_val_X, yval, 0)
+    # curve_visualization(X, error_train_0, error_val_0, 'Polynomial learning curve, $\lambda$ = 0')
+
+    theta_1 = train_linear_reg(poly_X, y, 1)
+    # plot_fit(X, y, 'Polynomial fit, $\lambda$ = 1', xlabel, ylabel, mu, sigma, theta_1, p)
+
+    error_train_1, error_val_1 = learning_curve(poly_X, y, poly_val_X, yval, 1)
+    # curve_visualization(X, error_train_1, error_val_1, 'Polynomial learning curve, $\lambda$ = 1')
+
+    theta_100 = train_linear_reg(poly_X, y, 100)
+    # plot_fit(X, y, 'Polynomial fit, $\lambda$ = 100', xlabel, ylabel, mu, sigma, theta_100, p)
+
+    error_train_100, error_val_100 = learning_curve(poly_X, y, poly_val_X, yval, 100)
+    # curve_visualization(X, error_train_100, error_val_100, 'Polynomial learning curve, $\lambda$ = 100')
 
 
 main()
