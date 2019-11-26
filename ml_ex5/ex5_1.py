@@ -85,6 +85,30 @@ def plot_fit(X, y, title, xlabel, ylabel, mu, sigma, theta, p):
     data_visualization(X, y, title, xlabel, ylabel)
 
 
+def validation_curve(X, y, Xval, yval):
+    reg_param = np.array([0, 0.001, 0.003, 0.01, 0.03, 0.1, 0.3, 1, 3, 10])
+    error_train = np.zeros((len(reg_param), 1))
+    error_val = np.zeros((len(reg_param), 1))
+    for i in range(len(reg_param)):
+        reg_coef = reg_param[i]
+        theta = train_linear_reg(X, y, reg_coef)
+        error_train[i] = linear_reg_cost(X, y, theta, 0)[0]
+        error_val[i] = linear_reg_cost(Xval, yval, theta, 0)[0]
+    return reg_param, error_train, error_val
+
+
+def validation_curve_visualization(reg_param, error_train, error_val):
+    plt.xlabel('$\lambda$')
+    plt.ylabel('Error')
+    plt.title('Selecting $\lambda$ using a cross validation set')
+    plt.plot(reg_param, error_train, c='blue', label='Train')
+    plt.plot(reg_param, error_val, c='green', label='Cross Validation')
+    plt.legend()
+    plt.xlim(0, 10)
+    plt.ylim(0, 20)
+    plt.show()
+
+
 def main():
     data = loadmat('ex5data1.mat')
     X, y = data['X'], data['y']
@@ -138,6 +162,14 @@ def main():
 
     error_train_100, error_val_100 = learning_curve(poly_X, y, poly_val_X, yval, 100)
     # curve_visualization(X, error_train_100, error_val_100, 'Polynomial learning curve, $\lambda$ = 100')
+
+    reg_param_vec, error_train_vec, error_val_vec = validation_curve(poly_X, y, poly_val_X, yval)
+    # validation_curve_visualization(reg_param_vec, error_train_vec, error_val_vec)
+
+    # Train the model with the best value of regularisation parameter
+    final_theta = train_linear_reg(poly_X, y, 3)
+    final_error_test = linear_reg_cost(poly_test_X, ytest, final_theta, 0)[0]
+    print("Test error for the best lambda:", final_error_test, '(this value should be about 3.57')
 
 
 main()
