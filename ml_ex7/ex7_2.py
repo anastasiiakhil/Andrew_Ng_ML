@@ -59,6 +59,37 @@ def visualization_after_PCA(X_norm, X_rec):
     plt.show()
 
 
+def faces_visualization(X):
+    fig, ax = plt.subplots(nrows=10, ncols=10, figsize=(8, 8))
+    for i in range(0, 100, 10):
+        for j in range(10):
+            ax[int(i / 10), j].imshow(X[i + j, :].reshape(32, 32, order="F"), cmap="gray")
+            ax[int(i / 10), j].axis("off")
+    fig.suptitle('Faces dataset')
+    plt.show()
+
+
+def faces_eigenvectors(X, U):
+    U_reduce = U[:, :36].T
+    fig, ax = plt.subplots(6, 6, figsize=(8, 8))
+    for i in range(0, 36, 6):
+        for j in range(6):
+            ax[int(i / 6), j].imshow(U_reduce[i + j, :].reshape(32, 32, order="F"), cmap="gray")
+            ax[int(i / 6), j].axis("off")
+    fig.suptitle(' Principal components on the face dataset')
+    plt.show()
+
+
+def reconstructed_faces(X_rec):
+    fig, ax = plt.subplots(10, 10, figsize=(8, 8))
+    for i in range(0, 100, 10):
+        for j in range(10):
+            ax[int(i / 10), j].imshow(X_rec[i + j, :].reshape(32, 32, order="F"), cmap="gray")
+            ax[int(i / 10), j].axis("off")
+    fig.suptitle('Reconstructed images of faces from only the top 100 principal components')
+    plt.show()
+
+
 def main():
     data = loadmat('ex7data1.mat')
     X = data["X"]
@@ -75,6 +106,19 @@ def main():
     X_rec = recover_data(Z, U, K)
     print("Approximation of the first example:", X_rec[0, :], '\n(this value should be about  -1.047419 -1.047419)\n')
     # visualization_after_PCA(X_norm, X_rec)
+
+    faces = loadmat('ex7faces.mat')
+    X2 = faces["X"]
+    # faces_visualization(X2)
+
+    X_norm2 = feature_normalize(X2)[0]
+    U2 = pca(X_norm2)[0]
+    # faces_eigenvectors(X_norm2, U2)
+
+    K2 = 100
+    Z2 = project_data(X_norm2, U2, K2)
+    X_rec2 = recover_data(Z2, U2, K2)
+    # reconstructed_faces(X_rec2)
 
 
 main()
